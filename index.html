@@ -73,8 +73,15 @@
   .badge-gift { background: #2e7d32; }
   .badge-other { background: #555; }
 
+  .slip .page-num {
+    position: absolute; top: 4px; right: 8px;
+    background: #e91e63; color: #fff; padding: 2px 10px;
+    border-radius: 0 0 6px 6px; font-size: 12px; font-weight: bold;
+  }
+
   /* Screen preview */
   .preview .slip {
+    position: relative;
     width: 210mm; min-height: 148mm;
     background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 8mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
@@ -85,6 +92,7 @@
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
     @page { size: A5 landscape; margin: 8mm; }
+    .slip .page-num { display: none !important; }
     .slip {
       page-break-after: always;
       width: 100%; height: 100%;
@@ -115,7 +123,19 @@
     <label for="closeDate">📅 結單日：</label>
     <input type="date" id="closeDate">
   </div>
-  <button class="print-btn" onclick="updateDateAndPrint()">🖨️ 列印全部出貨單</button>
+  <div class="date-input" style="margin-top:8px;">
+    <label>🖨️ 列印範圍：</label>
+    <select id="printMode" onchange="togglePageRange()" style="padding:8px;font-size:15px;border:2px solid #e91e63;border-radius:6px;">
+      <option value="all">全部客戶</option>
+      <option value="range">指定頁數</option>
+    </select>
+    <span id="pageRangeWrap" style="display:none;margin-left:8px;">
+      第 <input type="number" id="pageFrom" min="1" value="1" style="width:60px;padding:6px;font-size:15px;border:2px solid #e91e63;border-radius:6px;text-align:center;"> 頁
+      到 <input type="number" id="pageTo" min="1" value="1" style="width:60px;padding:6px;font-size:15px;border:2px solid #e91e63;border-radius:6px;text-align:center;"> 頁
+      <span id="pageTotal" style="color:#999;font-size:13px;margin-left:4px;"></span>
+    </span>
+  </div>
+  <button class="print-btn" onclick="updateDateAndPrint()">🖨️ 列印出貨單</button>
   <button class="reset-btn" onclick="location.reload()">重新上傳</button>
 </div>
 
@@ -216,7 +236,9 @@ function renderSlips() {
   const dateStr = getDateStr();
 
   let html = '';
-  for (const cust of currentCustomers) {
+  const total = currentCustomers.length;
+  currentCustomers.forEach((cust, ci) => {
+    const pageNum = ci + 1;
     let totalQty = 0;
     let hasBackorder = false;
     let hasRefund = false;
@@ -256,6 +278,7 @@ function renderSlips() {
 
     html += `
     <div class="slip">
+      <div class="page-num">第 ${pageNum} 頁 / 共 ${total} 頁</div>
       <div class="slip-header">
         <div class="company">BABY尋寶趣</div>
         <div class="subtitle">出貨明細單</div>
@@ -282,15 +305,40 @@ function renderSlips() {
         ${noticeHtml}
       </div>
     </div>`;
-  }
+  });
 
   container.innerHTML = html;
 }
 
+function togglePageRange() {
+  const mode = document.getElementById('printMode').value;
+  document.getElementById('pageRangeWrap').style.display = mode === 'range' ? 'inline' : 'none';
+  if (mode === 'range') {
+    document.getElementById('pageTo').value = currentCustomers.length;
+    document.getElementById('pageTotal').textContent = `(共 ${currentCustomers.length} 頁)`;
+  }
+}
+
 function updateDateAndPrint() {
-  // Re-render with latest date before printing
   renderSlips();
-  setTimeout(() => window.print(), 100);
+  const mode = document.getElementById('printMode').value;
+  if (mode === 'range') {
+    const from = parseInt(document.getElementById('pageFrom').value) || 1;
+    const to = parseInt(document.getElementById('pageTo').value) || currentCustomers.length;
+    // Hide slips outside range
+    const slips = document.querySelectorAll('#slipsContainer .slip');
+    slips.forEach((slip, i) => {
+      const page = i + 1;
+      slip.style.display = (page >= from && page <= to) ? '' : 'none';
+    });
+  } else {
+    document.querySelectorAll('#slipsContainer .slip').forEach(s => s.style.display = '');
+  }
+  setTimeout(() => {
+    window.print();
+    // Restore all after print
+    document.querySelectorAll('#slipsContainer .slip').forEach(s => s.style.display = '');
+  }, 100);
 }
 
 // Re-render when date changes

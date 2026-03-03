@@ -61,6 +61,7 @@
   .slip th { background: #eee; font-weight: bold; text-align: center; }
   .slip td.center { text-align: center; }
   .slip td.right { text-align: right; }
+  .slip td.compact, .slip th.compact { font-size: 11pt; white-space: nowrap; padding: 4px 4px; }
   .slip-footer { margin-top: 8px; font-size: 11pt; border-top: 1px dashed #000; padding-top: 6px; }
   .slip-footer .notice { margin-top: 4px; }
   .slip-total { text-align: right; font-size: 14pt; font-weight: bold; margin-top: 6px; }
@@ -263,8 +264,8 @@ function renderSlips() {
       rowsHtml += `<tr>
         <td>${productDisplay}</td>
         <td>${item.detail}</td>
-        <td class="right">${priceDisplay}</td>
-        <td class="center">${qty}</td>
+        <td class="right compact">${priceDisplay}</td>
+        <td class="center compact">${qty}</td>
       </tr>`;
     });
 
@@ -291,10 +292,10 @@ function renderSlips() {
       <table>
         <thead>
           <tr>
-            <th style="width:38%">品名</th>
-            <th style="width:26%">明細</th>
-            <th style="width:16%">單價</th>
-            <th style="width:12%">數量</th>
+            <th style="width:44%">品名</th>
+            <th style="width:30%">明細</th>
+            <th style="width:14%" class="compact">單價</th>
+            <th style="width:12%" class="compact">數量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>

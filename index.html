@@ -86,7 +86,7 @@
   /* Screen preview */
   .preview .slip {
     position: relative;
-    width: 148mm; min-height: 210mm;
+    width: 148mm; min-height: 200mm;
     background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
   }
@@ -101,6 +101,10 @@
       width: 100%;
       font-size: 13pt;
       padding: 1mm;
+      min-height: 0 !important;
+      max-height: none !important;
+      height: auto !important;
+      box-sizing: border-box;
     }
     .slip + .slip { page-break-before: always; }
     .slip table { page-break-inside: auto; }

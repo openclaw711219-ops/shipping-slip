@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; background: #f5f5f5; }
+  body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
   .upload-area {
     max-width: 600px; margin: 40px auto; padding: 40px; text-align: center;
@@ -53,8 +53,8 @@
 
   /* === Shared slip styles (screen preview + print) === */
   .slip-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 8px; }
-  .slip-header .company { font-size: 18pt; font-weight: bold; }
-  .slip-header .subtitle { font-size: 11pt; color: #333; }
+  .slip-header .company { font-size: 18pt; font-weight: bold; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
+  .slip-header .subtitle { font-size: 11pt; color: #333; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
   .slip-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13pt; }
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; }
   .slip th, .slip td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
@@ -66,13 +66,14 @@
   .slip-footer .notice { margin-top: 4px; }
   .slip-total { text-align: right; font-size: 14pt; font-weight: bold; margin-top: 6px; }
   .badge {
-    display: inline-block; color: #fff; padding: 1px 6px;
-    border-radius: 3px; font-size: 10pt; margin-right: 4px; vertical-align: middle;
+    display: inline-block; color: #000; background: #fff; padding: 0px 4px;
+    border: 1.5px solid #000; border-radius: 2px; font-size: 10pt;
+    margin-right: 4px; vertical-align: middle; font-weight: bold;
   }
-  .badge-backorder { background: #000; color: #fff; }
-  .badge-refund { background: #000; color: #fff; }
-  .badge-gift { background: #000; color: #fff; }
-  .badge-other { background: #000; color: #fff; }
+  .badge-backorder { }
+  .badge-refund { }
+  .badge-gift { }
+  .badge-other { }
 
   .slip .page-num {
     position: absolute; top: 4px; right: 8px;
@@ -281,21 +282,21 @@ function renderSlips() {
     <div class="slip">
       <div class="page-num">第 ${pageNum} 頁 / 共 ${total} 頁</div>
       <div class="slip-header">
-        <div class="company">BABY尋寶趣</div>
-        <div class="subtitle">出貨明細單</div>
+        <div class="company">🍼 BABY尋寶趣 🧸</div>
+        <div class="subtitle">✿ 出貨明細單 ✿</div>
       </div>
       <div class="slip-info">
         <div>編號：<span style="font-size:16pt;font-weight:bold;">${cust.id}</span></div>
-        <div><strong>客戶名稱：</strong>${cust.name}</div>
-        <div><strong>結單日：</strong><span class="date-display">${dateStr}</span></div>
+        <div>客戶：<span style="font-size:16pt;font-weight:bold;">${cust.name}</span></div>
+        <div>結單日：<span style="font-size:16pt;font-weight:bold;">${dateStr}</span></div>
       </div>
       <table>
         <thead>
           <tr>
-            <th style="width:50%">品名</th>
-            <th style="width:28%">明細</th>
-            <th style="width:10%" class="compact-price">單價</th>
-            <th style="width:12%">數量</th>
+            <th style="width:52%">品名</th>
+            <th style="width:28%;font-size:11pt;">明細</th>
+            <th style="width:10%;font-size:11pt;" class="compact-price">單價</th>
+            <th style="width:10%;font-size:11pt;">數量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>

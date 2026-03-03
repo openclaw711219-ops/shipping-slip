@@ -61,7 +61,7 @@
   .slip th { background: #eee; font-weight: bold; text-align: center; }
   .slip td.center { text-align: center; }
   .slip td.right { text-align: right; }
-  .slip td.compact, .slip th.compact { font-size: 11pt; white-space: nowrap; padding: 4px 4px; }
+  .slip td.compact-price, .slip th.compact-price { font-size: 11pt; white-space: nowrap; padding: 4px 2px; }
   .slip-footer { margin-top: 8px; font-size: 11pt; border-top: 1px dashed #000; padding-top: 6px; }
   .slip-footer .notice { margin-top: 4px; }
   .slip-total { text-align: right; font-size: 14pt; font-weight: bold; margin-top: 6px; }
@@ -264,8 +264,8 @@ function renderSlips() {
       rowsHtml += `<tr>
         <td>${productDisplay}</td>
         <td>${item.detail}</td>
-        <td class="right compact">${priceDisplay}</td>
-        <td class="center compact">${qty}</td>
+        <td class="right compact-price">${priceDisplay}</td>
+        <td class="center">${qty}</td>
       </tr>`;
     });
 
@@ -285,24 +285,24 @@ function renderSlips() {
         <div class="subtitle">出貨明細單</div>
       </div>
       <div class="slip-info">
-        <div><strong>客戶代號：</strong>${cust.id}</div>
+        <div style="font-size:14pt;font-weight:bold;">#${cust.id}</div>
         <div><strong>客戶名稱：</strong>${cust.name}</div>
         <div><strong>結單日：</strong><span class="date-display">${dateStr}</span></div>
       </div>
       <table>
         <thead>
           <tr>
-            <th style="width:44%">品名</th>
+            <th style="width:46%">品名</th>
             <th style="width:30%">明細</th>
-            <th style="width:14%" class="compact">單價</th>
-            <th style="width:12%" class="compact">數量</th>
+            <th style="width:10%" class="compact-price">單價</th>
+            <th style="width:14%">數量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
       </table>
       <div class="slip-total">合計數量：${totalQty} 件</div>
       <div class="slip-footer">
-        <div>📦 感謝您的訂購！如有任何問題，請聯繫 BABY尋寶趣 客服。</div>
+        <div>📦 感謝您的訂購！如有任何問題，請聯繫BABY尋寶趣 Line官方客服 @574uvbwp</div>
         ${noticeHtml}
       </div>
     </div>`;

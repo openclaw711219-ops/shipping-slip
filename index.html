@@ -31,13 +31,10 @@
   .summary .stat { background: #fce4ec; padding: 12px 20px; border-radius: 8px; }
   .summary .stat .num { font-size: 24px; font-weight: bold; color: #e91e63; }
   .summary .stat .label { font-size: 13px; color: #666; }
-  .date-input {
-    margin-bottom: 16px; font-size: 15px;
-  }
+  .date-input { margin-bottom: 16px; font-size: 15px; }
   .date-input label { font-weight: bold; margin-right: 8px; }
   .date-input input {
-    padding: 8px 12px; font-size: 15px; border: 2px solid #e91e63; border-radius: 6px;
-    font-family: inherit;
+    padding: 8px 12px; font-size: 15px; border: 2px solid #e91e63; border-radius: 6px; font-family: inherit;
   }
   .print-btn {
     padding: 12px 32px; background: #4caf50; color: #fff; border: none;
@@ -51,10 +48,17 @@
 
   .slips-container { display: none; }
 
-  /* === Shared slip styles (screen preview + print) === */
+  /* === Shared slip styles === */
   .slip-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 8px; }
-  .slip-header .company { font-size: 18pt; font-weight: bold; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
-  .slip-header .subtitle { font-size: 11pt; color: #333; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
+  .slip-header .company {
+    font-size: 18pt; font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  }
+  .slip-header .subtitle {
+    font-size: 11pt; color: #333;
+    font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  }
+  .slip-header .wing { font-size: 14pt; letter-spacing: 2px; }
   .slip-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13pt; }
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; }
   .slip th, .slip td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
@@ -62,18 +66,15 @@
   .slip td.center { text-align: center; }
   .slip td.right { text-align: right; }
   .slip td.compact-price, .slip th.compact-price { font-size: 11pt; white-space: nowrap; padding: 4px 2px; }
-  .slip-footer { margin-top: 8px; font-size: 11pt; border-top: 1px dashed #000; padding-top: 6px; }
-  .slip-footer .notice { margin-top: 4px; }
+  .slip-footer { margin-top: 8px; font-size: 10pt; border-top: none; padding-top: 6px; }
+  .slip-footer ul { list-style: disc; padding-left: 18px; }
+  .slip-footer li { margin-bottom: 2px; }
   .slip-total { text-align: right; font-size: 14pt; font-weight: bold; margin-top: 6px; }
   .badge {
-    display: inline-block; color: #000; background: #fff; padding: 0px 4px;
-    border: 1.5px solid #000; border-radius: 2px; font-size: 10pt;
-    margin-right: 4px; vertical-align: middle; font-weight: bold;
+    display: inline-block; color: #000; background: #fff;
+    padding: 1px 6px; border: 2.5px solid #000; border-radius: 3px;
+    font-size: 10pt; margin-right: 6px; vertical-align: middle; font-weight: bold;
   }
-  .badge-backorder { }
-  .badge-refund { }
-  .badge-gift { }
-  .badge-other { }
 
   .slip .page-num {
     position: absolute; top: 4px; right: 8px;
@@ -101,6 +102,7 @@
       font-size: 13pt;
     }
     .slip:last-child { page-break-after: avoid; }
+    .slip th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
@@ -148,7 +150,6 @@ const COL = { NAME: 0, CUSTOMER: 1, PRICE: 2, QTY: 3, AMOUNT: 4, DETAIL: 5, NOTE
 
 let currentCustomers = [];
 
-// Set default date to today
 document.addEventListener('DOMContentLoaded', () => {
   const today = new Date();
   document.getElementById('closeDate').value = today.toISOString().split('T')[0];
@@ -169,12 +170,11 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
 
 function parseNote(note) {
   note = String(note || '').trim();
-  if (!note) return { badges: [], text: '' };
+  if (!note) return { badges: [] };
   const badges = [];
   if (/待補寄/.test(note)) badges.push({ label: '待補寄', cls: 'badge-backorder' });
   if (/退款/.test(note)) badges.push({ label: '退款', cls: 'badge-refund' });
   if (/贈品/.test(note)) badges.push({ label: '贈品', cls: 'badge-gift' });
-  // If no known badge, treat entire note as a generic badge
   if (badges.length === 0 && note) badges.push({ label: note, cls: 'badge-other' });
   return { badges };
 }
@@ -256,7 +256,6 @@ function renderSlips() {
         if (b.label === '退款') hasRefund = true;
       });
 
-      // Build product name with badges prepended
       let badgeHtml = badges.map(b => `<span class="badge ${b.cls}">${b.label}</span>`).join('');
       let productDisplay = badgeHtml + item.product;
 
@@ -270,25 +269,17 @@ function renderSlips() {
       </tr>`;
     });
 
-    let noticeHtml = '';
-    if (hasBackorder || hasRefund) {
-      noticeHtml = '<div class="notice">⚠️ ';
-      if (hasBackorder) noticeHtml += '標示「待補寄」之品項將於到貨後盡速補寄。';
-      if (hasRefund) noticeHtml += '標示「退款」之品項將另行處理退款。';
-      noticeHtml += '</div>';
-    }
-
     html += `
     <div class="slip">
       <div class="page-num">第 ${pageNum} 頁 / 共 ${total} 頁</div>
       <div class="slip-header">
-        <div class="company">🍼 BABY尋寶趣 🧸</div>
-        <div class="subtitle">✿ 出貨明細單 ✿</div>
+        <div class="company">༺ BABY尋寶趣 ༻</div>
+        <div class="subtitle">༶ 出貨明細單 ༶</div>
       </div>
       <div class="slip-info">
         <div>編號：<span style="font-size:16pt;font-weight:bold;">${cust.id}</span></div>
-        <div>客戶：<span style="font-size:16pt;font-weight:bold;">${cust.name}</span></div>
-        <div>結單日：<span style="font-size:16pt;font-weight:bold;">${dateStr}</span></div>
+        <div>客戶：<span style="font-size:11pt;">${cust.name}</span></div>
+        <div>結單日：<span style="font-size:11pt;">${dateStr}</span></div>
       </div>
       <table>
         <thead>
@@ -303,8 +294,11 @@ function renderSlips() {
       </table>
       <div class="slip-total">合計數量：${totalQty} 件</div>
       <div class="slip-footer">
-        <div>📦 感謝您的訂購！如有任何問題，請聯繫BABY尋寶趣 Line官方客服 @574uvbwp</div>
-        ${noticeHtml}
+        <ul>
+          <li>感謝您的訂購！如有任何問題，請聯繫 Line官方客服 @574uvbwp</li>
+          <li>待補寄：到貨後將盡快補寄給您</li>
+          <li>退款：因到貨時間未定，已先行退款避免久候</li>
+        </ul>
       </div>
     </div>`;
   });
@@ -327,7 +321,6 @@ function updateDateAndPrint() {
   if (mode === 'range') {
     const from = parseInt(document.getElementById('pageFrom').value) || 1;
     const to = parseInt(document.getElementById('pageTo').value) || currentCustomers.length;
-    // Hide slips outside range
     const slips = document.querySelectorAll('#slipsContainer .slip');
     slips.forEach((slip, i) => {
       const page = i + 1;
@@ -338,12 +331,10 @@ function updateDateAndPrint() {
   }
   setTimeout(() => {
     window.print();
-    // Restore all after print
     document.querySelectorAll('#slipsContainer .slip').forEach(s => s.style.display = '');
   }, 100);
 }
 
-// Re-render when date changes
 document.getElementById('closeDate')?.addEventListener('change', renderSlips);
 </script>
 </body>

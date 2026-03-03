@@ -66,10 +66,11 @@
   .slip td.center { text-align: center; }
   .slip td.right { text-align: right; }
   .slip td.compact-price, .slip th.compact-price { font-size: 11pt; white-space: nowrap; padding: 4px 2px; }
-  .slip-footer { margin-top: 8px; font-size: 10pt; border-top: none; padding-top: 6px; }
-  .slip-footer ul { list-style: disc; padding-left: 18px; }
-  .slip-footer li { margin-bottom: 2px; }
-  .slip-total { text-align: right; font-size: 14pt; font-weight: bold; margin-top: 6px; }
+  .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 4px; }
+  .slip-footer { font-size: 8pt; color: #333; flex: 1; }
+  .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
+  .slip-footer li { margin-bottom: 1px; }
+  .slip-total { font-size: 14pt; font-weight: bold; white-space: nowrap; padding-left: 12px; }
   .badge {
     display: inline-block; color: #000; background: #fff;
     padding: 1px 6px; border: 2.5px solid #000; border-radius: 3px;
@@ -292,13 +293,15 @@ function renderSlips() {
         </thead>
         <tbody>${rowsHtml}</tbody>
       </table>
-      <div class="slip-total">合計數量：${totalQty} 件</div>
-      <div class="slip-footer">
-        <ul>
-          <li>感謝您的訂購！如有任何問題，請聯繫 Line官方客服 @574uvbwp</li>
-          <li>待補寄：到貨後將盡快補寄給您</li>
-          <li>退款：因到貨時間未定，已先行退款避免久候</li>
-        </ul>
+      <div class="slip-bottom">
+        <div class="slip-footer">
+          <ul>
+            <li>感謝您的訂購！如有任何問題，請聯繫 Line官方客服 @574uvbwp</li>
+            <li>待補寄：到貨後將盡快補寄給您</li>
+            <li>退款：因到貨時間未定，已先行退款避免久候</li>
+          </ul>
+        </div>
+        <div class="slip-total">合計：${totalQty} 件</div>
       </div>
     </div>`;
   });

@@ -98,12 +98,11 @@
     @page { size: A5 portrait; margin: 2mm; }
     .slip .page-num { display: none !important; }
     .slip {
-      page-break-after: always;
       width: 100%;
       font-size: 13pt;
       padding: 2mm;
     }
-    .slip:last-child { page-break-after: avoid; }
+    .slip + .slip { page-break-before: always; }
     .slip table { page-break-inside: auto; }
     .slip tr { page-break-inside: avoid; page-break-after: auto; }
     .slip thead { display: table-header-group; }

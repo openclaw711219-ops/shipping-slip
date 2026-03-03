@@ -264,7 +264,7 @@ function renderSlips() {
       rowsHtml += `<tr>
         <td>${productDisplay}</td>
         <td>${item.detail}</td>
-        <td class="right compact-price">${priceDisplay}</td>
+        <td class="center compact-price">${priceDisplay}</td>
         <td class="center">${qty}</td>
       </tr>`;
     });
@@ -285,7 +285,7 @@ function renderSlips() {
         <div class="subtitle">出貨明細單</div>
       </div>
       <div class="slip-info">
-        <div style="font-size:14pt;font-weight:bold;">#${cust.id}</div>
+        <div>編號：<span style="font-size:16pt;font-weight:bold;">${cust.id}</span></div>
         <div><strong>客戶名稱：</strong>${cust.name}</div>
         <div><strong>結單日：</strong><span class="date-display">${dateStr}</span></div>
       </div>

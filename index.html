@@ -87,7 +87,7 @@
   .preview .slip {
     position: relative;
     width: 148mm; min-height: 210mm;
-    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 5mm;
+    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
   }
 
@@ -95,7 +95,7 @@
     body { background: #fff; }
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
-    @page { size: A5 portrait; margin: 5mm; margin-top: 0; margin-bottom: 0; }
+    @page { size: A5 portrait; margin: 0; }
     .slip .page-num { display: none !important; }
     .slip {
       page-break-after: always;
@@ -275,7 +275,7 @@ function renderSlips() {
       <div class="page-num">第 ${pageNum} 頁 / 共 ${total} 頁</div>
       <div class="slip-header">
         <div class="company">༺ BABY尋寶趣 ༻</div>
-        <div class="subtitle">༶ 出貨明細單 ༶</div>
+        <div class="subtitle">✿ 出貨明細單 ✿</div>
       </div>
       <div class="slip-info">
         <div>編號：<span style="font-size:16pt;font-weight:bold;">${cust.id}</span></div>
@@ -285,10 +285,10 @@ function renderSlips() {
       <table>
         <thead>
           <tr>
-            <th style="width:52%">品名</th>
-            <th style="width:28%;font-size:11pt;">明細</th>
+            <th style="width:53%">品名</th>
+            <th style="width:29%;font-size:11pt;">明細</th>
             <th style="width:10%;font-size:11pt;" class="compact-price">單價</th>
-            <th style="width:10%;font-size:11pt;">數量</th>
+            <th style="width:8%;font-size:11pt;">數量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>

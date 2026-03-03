@@ -69,10 +69,10 @@
     display: inline-block; color: #fff; padding: 1px 6px;
     border-radius: 3px; font-size: 10pt; margin-right: 4px; vertical-align: middle;
   }
-  .badge-backorder { background: #e65100; }
-  .badge-refund { background: #c62828; }
-  .badge-gift { background: #2e7d32; }
-  .badge-other { background: #555; }
+  .badge-backorder { background: #000; color: #fff; }
+  .badge-refund { background: #000; color: #fff; }
+  .badge-gift { background: #000; color: #fff; }
+  .badge-other { background: #000; color: #fff; }
 
   .slip .page-num {
     position: absolute; top: 4px; right: 8px;
@@ -83,8 +83,8 @@
   /* Screen preview */
   .preview .slip {
     position: relative;
-    width: 210mm; min-height: 148mm;
-    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 8mm;
+    width: 148mm; min-height: 210mm;
+    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 5mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
   }
 
@@ -92,7 +92,7 @@
     body { background: #fff; }
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
-    @page { size: A5 landscape; margin: 8mm; }
+    @page { size: A5 portrait; margin: 5mm; }
     .slip .page-num { display: none !important; }
     .slip {
       page-break-after: always;
@@ -292,10 +292,10 @@ function renderSlips() {
       <table>
         <thead>
           <tr>
-            <th style="width:46%">品名</th>
-            <th style="width:30%">明細</th>
+            <th style="width:50%">品名</th>
+            <th style="width:28%">明細</th>
             <th style="width:10%" class="compact-price">單價</th>
-            <th style="width:14%">數量</th>
+            <th style="width:12%">數量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>

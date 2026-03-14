@@ -51,21 +51,32 @@
   /* === Shared slip styles === */
   .slip {
     position: relative;
-    width: 138mm; min-height: 200mm;
-    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 4mm;
+    width: 148mm; min-height: 200mm;
+    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 5mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
   }
 
   .slip-header-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     border-bottom: 2px solid #000;
-    padding-bottom: 4px;
-    margin-bottom: 6px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    position: relative;
   }
   .slip-header { flex: 1; text-align: center; }
-  .slip-qrcode { width: 25mm; height: 25mm; display: flex; align-items: center; justify-content: flex-end; }
-  .slip-qrcode img { width: 24mm; height: 24mm; object-fit: contain; }
+  .slip-qrcode { 
+    width: 32mm; 
+    height: 32mm; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    border: 1px solid #eee;
+    background: #fff;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+  .slip-qrcode img { width: 30mm; height: 30mm; object-fit: contain; }
 
   .slip-header .company {
     font-size: 18pt; font-weight: bold;
@@ -75,10 +86,10 @@
     font-size: 11pt; color: #333;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
   }
-  .slip-info { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11pt; }
+  .slip-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13pt; }
   
-  .slip table { width: 100%; border-collapse: collapse; font-size: 11pt; table-layout: fixed; }
-  .slip th, .slip td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
+  .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
+  .slip th, .slip td { border: 1px solid #000; padding: 6px 8px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; }
   
   /* 單行不換行設定 + 加高列高 */
@@ -86,29 +97,29 @@
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: clip; 
-    height: 9mm; /* 增加列高 */
-    line-height: 8mm;
+    height: 11mm; /* 配合 13pt 字體增加列高 */
+    line-height: 10mm;
     vertical-align: middle;
   }
   
   .slip td.center { text-align: center; }
-  .slip td.compact-price, .slip th.compact-price { font-size: 10pt; white-space: nowrap; padding: 4px 2px; }
+  .slip td.compact-price, .slip th.compact-price { font-size: 11pt; white-space: nowrap; padding: 4px 2px; }
   
-  /* 欄位寬度優化：品名加寬 2%，明細縮減 2% */
+  /* 欄位寬度優化：品名 55%，明細 27%，單價 10%，數量 8% */
   .col-prod { width: 55%; }
   .col-detail { width: 27%; }
   .col-price { width: 10%; }
   .col-qty { width: 8%; }
 
-  .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 4px; }
-  .slip-footer { font-size: 8pt; color: #333; flex: 1; }
+  .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px; }
+  .slip-footer { font-size: 9pt; color: #333; flex: 1; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
-  .slip-footer li { margin-bottom: 1px; }
-  .slip-total { font-size: 13pt; font-weight: bold; white-space: nowrap; padding-left: 12px; }
+  .slip-footer li { margin-bottom: 2px; }
+  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; padding-left: 12px; }
   .badge {
     display: inline-block; color: #000; background: #fff;
-    padding: 1px 4px; border: 2.2px solid #000; border-radius: 3px;
-    font-size: 9pt; margin-right: 4px; vertical-align: middle; font-weight: bold;
+    padding: 1px 5px; border: 2.5px solid #000; border-radius: 3px;
+    font-size: 10pt; margin-right: 5px; vertical-align: middle; font-weight: bold;
   }
 
   .slip .page-num {
@@ -122,25 +133,25 @@
     body { background: #fff; }
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
-    @page { size: A5 portrait; margin: 6mm 8mm; } /* 增加邊界確保不被切掉 */
+    @page { size: A5 portrait; margin: 0; } /* 邊界交給 slip 控制 */
     .slip .page-num { display: none !important; }
     .slip {
-      width: 100%;
-      font-size: 11pt;
-      padding: 0mm;
+      width: 148mm;
+      height: 210mm;
+      font-size: 13pt;
+      padding: 6mm 8mm; /* 在 slip 內部設定邊距，不使用 @page margin */
       margin: 0;
       border: none;
-      min-height: 0 !important;
-      max-height: none !important;
-      height: auto !important;
       box-sizing: border-box;
       box-shadow: none;
+      display: flex;
+      flex-direction: column;
     }
     .slip + .slip { page-break-before: always; }
-    .slip table { page-break-inside: auto; font-size: 10.5pt; }
+    .slip table { page-break-inside: auto; font-size: 13pt; }
     .slip tr { page-break-inside: avoid; page-break-after: auto; }
     .slip thead { display: table-header-group; }
-    .slip-bottom { page-break-inside: avoid; }
+    .slip-bottom { page-break-inside: avoid; margin-top: auto; } /* 強制底部對齊 */
     .slip th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>

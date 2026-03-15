@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-1045 */
+  /* 版本快感：2026-03-15-1055 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -75,20 +75,19 @@
   .slip th, .slip td { border: 1px solid #000; padding: 2px 4px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; font-size: 11pt; line-height: 1.1; }
   
-  /* 有內容的列高 */
+  /* 縮小列高 */
   .slip td { 
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: clip; 
-    height: 7.8mm; /* 稍微調低列高爭取空間 */
-    line-height: 7.2mm;
+    height: 7.5mm; 
+    line-height: 7mm;
     vertical-align: middle;
   }
   
-  /* 空白行的樣式：移除框線 */
   .slip tr.empty-row td {
     border: none;
-    height: 7.8mm;
+    height: 7.5mm;
   }
   
   .slip td.center { text-align: center; }
@@ -104,20 +103,20 @@
     margin-top: auto; 
     padding-top: 1mm;
     position: relative;
-    height: 38mm; /* 增加底部高度，避免 QR 蓋到字 */
+    height: 35mm; /* 固定高度，優化空間 */
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
   }
   .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
-  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; margin-top: 2mm; width: 80px; text-align: right; }
+  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; margin-top: 2mm; width: 100px; text-align: right; }
   
-  /* QR Code 位置：位置稍微下移，確保不蓋到表格最後一行 */
+  /* QR Code 位置調整，絕對不遮蓋 */
   .slip-qrcode-container {
     position: absolute;
-    left: 65%; /* 往右移避開備註 */
-    bottom: 0mm;
+    left: 62%; /* 位置微調 */
+    bottom: -1mm; /* 稍微下壓 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -247,7 +246,7 @@ function renderSlips() {
   currentCustomers.forEach((cust, ci) => {
     const itemsPerPage = 17;
     const totalPages = Math.ceil(cust.items.length / itemsPerPage) || 1;
-    const totalQty = cust.items.reduce((a,b)=>a+(Number(b.qty)||0),0);
+    const grandTotal = cust.items.reduce((a,b)=>a+(Number(b.qty)||0),0);
 
     for (let p = 0; p < totalPages; p++) {
       const pageItems = cust.items.slice(p * itemsPerPage, (p + 1) * itemsPerPage);
@@ -268,7 +267,6 @@ function renderSlips() {
         </tr>`;
       });
 
-      // 補足空行，並移除框線（使用 empty-row class）
       for (let i = pageItems.length; i < itemsPerPage; i++) {
         rowsHtml += '<tr class="empty-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
       }
@@ -293,8 +291,8 @@ function renderSlips() {
             <tr>
               <th style="width:56%">品名</th>
               <th style="width:30%">明細</th>
-              <th style="width:7%">單<br>價</th>
-              <th style="width:7%">數<br>量</th>
+              <th style="width:7%">單價</th>
+              <th style="width:7%">數量</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -311,7 +309,7 @@ function renderSlips() {
             <div class="slip-qrcode-bottom" id="qrcode-${ci}-${p}"></div>
             <div class="slip-qrcode-id">@574uvbwp</div>
           </div>
-          <div class="slip-total">${isLastPage ? `合計：${totalQty} 件` : ''}</div>
+          <div class="slip-total">${isLastPage ? `合計：${grandTotal}` : ''}</div>
         </div>
       </div>`;
     }

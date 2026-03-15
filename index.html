@@ -6,7 +6,7 @@
 <title>BABY尋寶趣 出貨單產生器</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-0850 */
+  /* 版本快感：2026-03-15-0915 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -52,8 +52,8 @@
   /* === Shared slip styles === */
   .slip {
     position: relative;
-    width: 148mm; min-height: 210mm; /* A5 高度 */
-    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 5mm;
+    width: 148mm; min-height: 210mm;
+    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm; /* 恢復 3mm 邊距 */
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
     display: flex;
     flex-direction: column;
@@ -61,9 +61,9 @@
 
   .slip-header-wrapper {
     text-align: center;
-    border-bottom: 2px solid #000;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    /* 去除編號上的黑線 border-bottom: 2px solid #000; */
+    padding-bottom: 2px;
+    margin-bottom: 4px;
     position: relative;
   }
   .slip-header { flex: 1; }
@@ -71,29 +71,38 @@
   .slip-header .company {
     font-size: 18pt; font-weight: bold;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    margin-top: -2mm; /* 往上挪 */
   }
   .slip-header .subtitle {
     font-size: 11pt; color: #333;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    margin-top: -1mm; /* 縮小間距 */
   }
-  .slip-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13pt; }
+  .slip-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13pt; }
   
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
-  .slip th, .slip td { border: 1px solid #000; padding: 4px 8px; text-align: left; }
-  .slip th { background: #eee; font-weight: bold; text-align: center; }
+  .slip th, .slip td { border: 1px solid #000; padding: 2px 4px; text-align: left; }
+  .slip th { background: #eee; font-weight: bold; text-align: center; line-height: 1.2; }
   
   .slip td { 
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: clip; 
-    height: 7mm; 
-    line-height: 6.5mm;
+    height: 7.5mm; /* 微調高度以確保 17 行能放下 */
+    line-height: 7mm;
     vertical-align: middle;
   }
   
   .slip td.center { text-align: center; }
-  /* 單價欄呈現方式與數量一致 */
-  .slip td.compact-price, .slip th.compact-price { font-size: 13pt; white-space: nowrap; padding: 4px 8px; text-align: center; }
+  /* 單價與數量欄位：字體 11pt，表頭垂直呈現 */
+  .slip td.compact-price, .slip th.compact-price,
+  .slip td.qty-col, .slip th.qty-col { 
+    font-size: 11pt; 
+    white-space: normal; 
+    padding: 2px; 
+    text-align: center; 
+    word-break: break-all;
+  }
   
   .col-prod { width: 56%; }
   .col-detail { width: 30%; }
@@ -101,21 +110,14 @@
   .col-qty { width: 7%; }
 
   .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 1mm; }
-  .slip-footer { font-size: 9pt; color: #333; flex: 1; padding-top: 1mm; }
+  .slip-footer { font-size: 9pt; color: #333; flex: 1; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
-  .slip-footer li { margin-bottom: 2px; }
-  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; padding-left: 12px; padding-top: 1mm; }
+  .slip-footer li { margin-bottom: 1px; }
+  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; padding-left: 12px; }
   .badge {
     display: inline-block; color: #000; background: #fff;
-    padding: 1px 5px; border: 2.5px solid #000; border-radius: 3px;
-    font-size: 10pt; margin-right: 5px; vertical-align: middle; font-weight: bold;
-  }
-
-  .slip .page-num {
-    position: absolute; top: 4px; right: 8px;
-    background: #e91e63; color: #fff; padding: 2px 10px;
-    border-radius: 0 0 6px 6px; font-size: 12px; font-weight: bold;
-    z-index: 10;
+    padding: 0px 4px; border: 2px solid #000; border-radius: 3px;
+    font-size: 9pt; margin-right: 4px; vertical-align: middle; font-weight: bold;
   }
 
   @media print {
@@ -127,16 +129,15 @@
     .slip {
       width: 148mm;
       min-height: 210mm;
-      height: auto; /* 允許內容多時撐開 */
+      height: auto;
       font-size: 13pt;
-      padding: 6mm 3mm;
+      padding: 3mm; /* 頭尾左右均為 3mm */
       margin: 0;
       border: none;
       box-sizing: border-box;
       box-shadow: none;
       page-break-after: always;
     }
-    /* 修正列印截斷：確保內容超過一頁時能自動分頁 */
     .slip table { page-break-inside: auto; }
     .slip tr { page-break-inside: avoid; page-break-after: auto; }
     .slip thead { display: table-header-group; }
@@ -298,20 +299,18 @@ function renderSlips() {
       const { badges } = parseNote(item.note);
       let badgeHtml = badges.map(b => `<span class="badge ${b.cls}">${b.label}</span>`).join('');
       let productDisplay = badgeHtml + item.product;
-      // 去除 $ 符號
       const priceDisplay = item.price !== '' && item.price != null ? `${Number(item.price).toLocaleString()}` : '';
 
       rowsHtml += `<tr>
         <td style="width:56%">${productDisplay}</td>
         <td style="width:30%">${item.detail}</td>
-        <td class="center compact-price" style="width:7%">${priceDisplay}</td>
-        <td class="center" style="width:7%">${qty}</td>
+        <td class="compact-price" style="width:7%">${priceDisplay}</td>
+        <td class="qty-col" style="width:7%">${qty}</td>
       </tr>`;
     });
 
     html += `
     <div class="slip">
-      <div class="page-num">第 ${pageNum} 頁 / 共 ${total} 頁</div>
       <div class="slip-header-wrapper">
         <div class="slip-header">
           <div class="company">༺ BABY尋寶趣 ༻</div>
@@ -328,8 +327,8 @@ function renderSlips() {
           <tr>
             <th style="width:56%">品名</th>
             <th style="width:30%;font-size:11pt;">明細</th>
-            <th style="width:7%;font-size:11pt;" class="compact-price">單價</th>
-            <th style="width:7%;font-size:11pt;">數量</th>
+            <th style="width:7%;" class="compact-price">單<br>價</th>
+            <th style="width:7%;" class="qty-col">數<br>量</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
@@ -369,7 +368,6 @@ function updateDateAndPrint() {
     const to = parseInt(document.getElementById('pageTo').value) || currentCustomers.length;
     slips.forEach((slip, i) => {
       const page = i + 1;
-      // 關鍵修復：針對不列印的頁面使用樣式完全隱藏，並確保不佔用列印空間
       if (page >= from && page <= to) {
         slip.style.display = 'flex';
       } else {
@@ -380,10 +378,8 @@ function updateDateAndPrint() {
     slips.forEach(s => s.style.display = 'flex');
   }
 
-  // 給予瀏覽器足夠時間反應樣式變化
   setTimeout(() => {
     window.print();
-    // 列印完畢恢復預覽顯示
     slips.forEach(s => s.style.display = 'flex');
   }, 300);
 }

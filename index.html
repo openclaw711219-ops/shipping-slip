@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-1115 */
+  /* 版本快感：2026-03-15-1120 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -93,14 +93,23 @@
   .slip td.compact-price { font-size: 11pt; text-align: center; }
   .slip td.qty-col { font-size: 13pt; text-align: center; }
   
-  /* 合計行：緊跟在表格下方 */
-  .slip-total-row {
+  /* 強制合計行緊貼表格最後一條有邊框的線 */
+  .slip-total-area {
+    width: 100%;
     display: flex;
     justify-content: flex-end;
-    margin-top: 2mm; /* 緊貼表格 */
-    padding-right: 4px;
+    margin-top: -1px; /* 消除邊框重疊縫隙 */
   }
-  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; }
+  .slip-total-box {
+    width: 44.5mm; /* 大約是 單價+數量 兩欄的總寬度 */
+    border: 1px solid #000;
+    border-top: none;
+    padding: 2px 4px;
+    text-align: right;
+    font-size: 15pt;
+    font-weight: bold;
+    background: #fff;
+  }
 
   .slip-bottom { 
     margin-top: auto; 
@@ -114,11 +123,10 @@
   .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
   
-  /* QR Code 位置往下微調 1mm，並加粗文字 */
   .slip-qrcode-container {
     position: absolute;
     left: 65%; 
-    bottom: -2mm; /* 原本是 -1mm，往下微調 1mm 到 -2mm */
+    bottom: -2mm;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -269,7 +277,11 @@ function renderSlips() {
         </tr>`;
       });
 
-      for (let i = pageItems.length; i < itemsPerPage; i++) {
+      // 找出實際有資料的行數，以便讓合計行緊貼
+      const actualRowsCount = pageItems.length;
+
+      // 補足空行維持頁面高度，但空行不加邊框
+      for (let i = actualRowsCount; i < itemsPerPage; i++) {
         rowsHtml += '<tr class="empty-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
       }
 
@@ -288,20 +300,23 @@ function renderSlips() {
           <div>客戶：${cust.name}</div>
           <div>結單日：${dateStr} ${totalPages > 1 ? `(${p+1}/${totalPages})` : ''}</div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th style="width:56%">品名</th>
-              <th style="width:30%">明細</th>
-              <th style="width:7%">單價</th>
-              <th style="width:7%">數量</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
-        
-        <div class="slip-total-row">
-          <div class="slip-total">${isLastPage ? `合計：${grandTotal}` : ''}</div>
+        <div style="position:relative;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:56%">品名</th>
+                <th style="width:30%">明細</th>
+                <th style="width:7%">單價</th>
+                <th style="width:7%">數量</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+          ${isLastPage ? `
+          <div class="slip-total-area" style="position:absolute; top:${27.5 + (actualRowsCount * 7.5)}mm; right:0;">
+            <div class="slip-total-box">合計：${grandTotal}</div>
+          </div>
+          ` : ''}
         </div>
 
         <div class="slip-bottom">

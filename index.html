@@ -51,9 +51,11 @@
   /* === Shared slip styles === */
   .slip {
     position: relative;
-    width: 148mm; min-height: 200mm;
+    width: 148mm; min-height: 210mm; /* A5 高度 */
     background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 5mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    display: flex;
+    flex-direction: column;
   }
 
   .slip-header-wrapper {
@@ -64,7 +66,6 @@
     position: relative;
   }
   .slip-header { flex: 1; }
-  .slip-qrcode { display: none; } /* 移除 QR Code */
 
   .slip-header .company {
     font-size: 18pt; font-weight: bold;
@@ -80,7 +81,6 @@
   .slip th, .slip td { border: 1px solid #000; padding: 4px 8px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; }
   
-  /* 單行不換行設定 + 列高 7mm */
   .slip td { 
     white-space: nowrap; 
     overflow: hidden; 
@@ -91,23 +91,15 @@
   }
   
   .slip td.center { text-align: center; }
-  /* 單價欄字體縮小到 11pt */
-  .slip td.compact-price, .slip th.compact-price { font-size: 11pt; white-space: nowrap; padding: 4px 2px; }
+  /* 單價欄呈現方式與數量一致 */
+  .slip td.compact-price, .slip th.compact-price { font-size: 13pt; white-space: nowrap; padding: 4px 8px; text-align: center; }
   
-  /* 欄位寬度調整：
-     原本：品名 58%, 明細 25%, 單價 10%, 數量 7%
-     調整：
-     1. 品名減少 2% -> 56%
-     2. 單價縮減為與數量一致 (7%) -> 7%
-     3. 挪出的空間 (2% + 3% = 5%) 給明細 -> 25% + 5% = 30%
-     最終：品名 56%, 明細 30%, 單價 7%, 數量 7%
-  */
   .col-prod { width: 56%; }
   .col-detail { width: 30%; }
   .col-price { width: 7%; }
   .col-qty { width: 7%; }
 
-  .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 1mm; } /* 增加與表格間距 1mm */
+  .slip-bottom { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 1mm; }
   .slip-footer { font-size: 9pt; color: #333; flex: 1; padding-top: 1mm; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
   .slip-footer li { margin-bottom: 2px; }
@@ -133,21 +125,21 @@
     .slip .page-num { display: none !important; }
     .slip {
       width: 148mm;
-      height: 210mm;
+      min-height: 210mm;
+      height: auto; /* 允許內容多時撐開 */
       font-size: 13pt;
       padding: 6mm 3mm;
       margin: 0;
       border: none;
       box-sizing: border-box;
       box-shadow: none;
-      display: flex;
-      flex-direction: column;
+      page-break-after: always;
     }
-    .slip + .slip { page-break-before: always; }
-    .slip table { page-break-inside: auto; font-size: 13pt; }
+    /* 修正列印截斷：確保內容超過一頁時能自動分頁 */
+    .slip table { page-break-inside: auto; }
     .slip tr { page-break-inside: avoid; page-break-after: auto; }
     .slip thead { display: table-header-group; }
-    .slip-bottom { page-break-inside: avoid; margin-top: auto; }
+    .slip-bottom { page-break-inside: avoid; }
     .slip th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
@@ -305,7 +297,8 @@ function renderSlips() {
       const { badges } = parseNote(item.note);
       let badgeHtml = badges.map(b => `<span class="badge ${b.cls}">${b.label}</span>`).join('');
       let productDisplay = badgeHtml + item.product;
-      const priceDisplay = item.price !== '' && item.price != null ? `$${Number(item.price).toLocaleString()}` : '';
+      // 去除 $ 符號
+      const priceDisplay = item.price !== '' && item.price != null ? `${Number(item.price).toLocaleString()}` : '';
 
       rowsHtml += `<tr>
         <td style="width:56%">${productDisplay}</td>
@@ -361,28 +354,37 @@ function togglePageRange() {
   document.getElementById('pageRangeWrap').style.display = mode === 'range' ? 'inline' : 'none';
   if (mode === 'range') {
     document.getElementById('pageTo').value = currentCustomers.length;
-    document.getElementById('pageTotal').textContent = `(共 ${currentCustomers.length} 頁)`;
+    document.getElementById('pageTotal').textContent = `(共 ${currentCustomers.length}頁)`;
   }
 }
 
 function updateDateAndPrint() {
   renderSlips();
   const mode = document.getElementById('printMode').value;
+  const slips = document.querySelectorAll('#slipsContainer .slip');
+  
   if (mode === 'range') {
     const from = parseInt(document.getElementById('pageFrom').value) || 1;
     const to = parseInt(document.getElementById('pageTo').value) || currentCustomers.length;
-    const slips = document.querySelectorAll('#slipsContainer .slip');
     slips.forEach((slip, i) => {
       const page = i + 1;
-      slip.style.display = (page >= from && page <= to) ? '' : 'none';
+      // 關鍵修復：針對不列印的頁面使用樣式完全隱藏，並確保不佔用列印空間
+      if (page >= from && page <= to) {
+        slip.style.display = 'flex';
+      } else {
+        slip.style.display = 'none';
+      }
     });
   } else {
-    document.querySelectorAll('#slipsContainer .slip').forEach(s => s.style.display = '');
+    slips.forEach(s => s.style.display = 'flex');
   }
+
+  // 給予瀏覽器足夠時間反應樣式變化
   setTimeout(() => {
     window.print();
-    document.querySelectorAll('#slipsContainer .slip').forEach(s => s.style.display = '');
-  }, 100);
+    // 列印完畢恢復預覽顯示
+    slips.forEach(s => s.style.display = 'flex');
+  }, 300);
 }
 
 document.getElementById('closeDate')?.addEventListener('change', renderSlips);

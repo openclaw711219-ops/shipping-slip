@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-1030 */
+  /* 版本快感：2026-03-15-1045 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -50,11 +50,10 @@
 
   .slips-container { display: block; }
 
-  /* === Shared slip styles === */
   .slip {
     position: relative;
     width: 148mm; 
-    height: 210mm; /* 固定高度 A5 */
+    height: 210mm;
     background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
     display: flex;
@@ -67,28 +66,29 @@
     border-bottom: 2px solid #000;
     padding-bottom: 4px;
     margin-bottom: 8px;
-    position: relative;
   }
-  .slip-header .company {
-    font-size: 18pt; font-weight: bold;
-    font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
-  }
-  .slip-header .subtitle {
-    font-size: 11pt; color: #333;
-  }
+  .slip-header .company { font-size: 18pt; font-weight: bold; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
+  .slip-header .subtitle { font-size: 11pt; color: #333; }
   .slip-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13pt; align-items: flex-end; }
   
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
   .slip th, .slip td { border: 1px solid #000; padding: 2px 4px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; font-size: 11pt; line-height: 1.1; }
   
+  /* 有內容的列高 */
   .slip td { 
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: clip; 
-    height: 8.2mm; /* 稍微調整以配合 17 行高度 */
-    line-height: 7.5mm;
+    height: 7.8mm; /* 稍微調低列高爭取空間 */
+    line-height: 7.2mm;
     vertical-align: middle;
+  }
+  
+  /* 空白行的樣式：移除框線 */
+  .slip tr.empty-row td {
+    border: none;
+    height: 7.8mm;
   }
   
   .slip td.center { text-align: center; }
@@ -101,29 +101,30 @@
   .col-qty { width: 7%; }
 
   .slip-bottom { 
-    margin-top: auto; /* 推到最下面 */
-    padding-top: 2mm;
+    margin-top: auto; 
+    padding-top: 1mm;
     position: relative;
-    height: 38mm; /* 固定底部高度，方便 QR 定位 */
+    height: 38mm; /* 增加底部高度，避免 QR 蓋到字 */
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
   }
-  .slip-footer { font-size: 9pt; color: #333; line-height: 1.3; }
+  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
-  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; margin-top: 2mm; }
+  .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; margin-top: 2mm; width: 80px; text-align: right; }
   
+  /* QR Code 位置：位置稍微下移，確保不蓋到表格最後一行 */
   .slip-qrcode-container {
     position: absolute;
-    left: 58%;
-    bottom: 2mm;
+    left: 65%; /* 往右移避開備註 */
+    bottom: 0mm;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 30mm;
     transform: translateX(-50%);
   }
-  .slip-qrcode-bottom { width: 24mm; height: 24mm; background: #fff; }
+  .slip-qrcode-bottom { width: 22mm; height: 22mm; background: #fff; }
   .slip-qrcode-bottom img { width: 100% !important; height: 100% !important; }
   .slip-qrcode-id { font-size: 9pt; font-weight: bold; margin-top: 1mm; color: #000; }
 
@@ -138,6 +139,7 @@
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
     @page { size: A5 portrait; margin: 0; }
+    .slip .page-num { display: none !important; }
     .slip {
       width: 148mm; height: 210mm;
       padding: 3mm; margin: 0; border: none;
@@ -243,18 +245,16 @@ function renderSlips() {
   let html = '';
 
   currentCustomers.forEach((cust, ci) => {
-    // 強制分頁：每 17 行一頁
     const itemsPerPage = 17;
     const totalPages = Math.ceil(cust.items.length / itemsPerPage) || 1;
+    const totalQty = cust.items.reduce((a,b)=>a+(Number(b.qty)||0),0);
 
     for (let p = 0; p < totalPages; p++) {
       const pageItems = cust.items.slice(p * itemsPerPage, (p + 1) * itemsPerPage);
       let rowsHtml = '';
-      let pageQty = 0;
 
       pageItems.forEach(item => {
         const q = Number(item.qty) || 0;
-        pageQty += q;
         const note = item.note;
         let badgeHtml = '';
         if (/待補寄/.test(note)) badgeHtml += '<span class="badge">待補寄</span>';
@@ -268,10 +268,12 @@ function renderSlips() {
         </tr>`;
       });
 
-      // 補足空行維持高度
+      // 補足空行，並移除框線（使用 empty-row class）
       for (let i = pageItems.length; i < itemsPerPage; i++) {
-        rowsHtml += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+        rowsHtml += '<tr class="empty-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
       }
+
+      const isLastPage = (p === totalPages - 1);
 
       html += `
       <div class="slip" data-page="${ci + 1}">
@@ -309,7 +311,7 @@ function renderSlips() {
             <div class="slip-qrcode-bottom" id="qrcode-${ci}-${p}"></div>
             <div class="slip-qrcode-id">@574uvbwp</div>
           </div>
-          <div class="slip-total">合計：${p === totalPages - 1 ? cust.items.reduce((a,b)=>a+(Number(b.qty)||0),0) : pageQty} 件</div>
+          <div class="slip-total">${isLastPage ? `合計：${totalQty} 件` : ''}</div>
         </div>
       </div>`;
     }

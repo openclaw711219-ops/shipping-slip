@@ -6,7 +6,7 @@
 <title>BABY尋寶趣 出貨單產生器</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-0915 */
+  /* 版本快感：2026-03-15-0925 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -53,7 +53,7 @@
   .slip {
     position: relative;
     width: 148mm; min-height: 210mm;
-    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm; /* 恢復 3mm 邊距 */
+    background: #fff; border: 1px solid #ccc; margin: 20px auto; padding: 3mm;
     font-size: 13pt; box-shadow: 0 2px 8px rgba(0,0,0,.1);
     display: flex;
     flex-direction: column;
@@ -61,9 +61,9 @@
 
   .slip-header-wrapper {
     text-align: center;
-    /* 去除編號上的黑線 border-bottom: 2px solid #000; */
-    padding-bottom: 2px;
-    margin-bottom: 4px;
+    border-bottom: 2px solid #000; /* 加回黑線 */
+    padding-bottom: 4px;
+    margin-bottom: 8px;
     position: relative;
   }
   .slip-header { flex: 1; }
@@ -71,14 +71,14 @@
   .slip-header .company {
     font-size: 18pt; font-weight: bold;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
-    margin-top: -2mm; /* 往上挪 */
+    margin-top: -1mm;
   }
   .slip-header .subtitle {
     font-size: 11pt; color: #333;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
-    margin-top: -1mm; /* 縮小間距 */
+    margin-top: 0mm;
   }
-  .slip-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13pt; }
+  .slip-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13pt; align-items: flex-end; }
   
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
   .slip th, .slip td { border: 1px solid #000; padding: 2px 4px; text-align: left; }
@@ -88,20 +88,27 @@
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: clip; 
-    height: 7.5mm; /* 微調高度以確保 17 行能放下 */
+    height: 7.5mm; 
     line-height: 7mm;
     vertical-align: middle;
   }
   
   .slip td.center { text-align: center; }
-  /* 單價與數量欄位：字體 11pt，表頭垂直呈現 */
-  .slip td.compact-price, .slip th.compact-price,
-  .slip td.qty-col, .slip th.qty-col { 
+  
+  /* 單價欄位：字體 11pt，表頭垂直呈現 */
+  .slip td.compact-price, .slip th.compact-price { 
     font-size: 11pt; 
     white-space: normal; 
     padding: 2px; 
     text-align: center; 
-    word-break: break-all;
+  }
+  
+  /* 數量欄位：強制 13pt 數字，表頭垂直呈現 */
+  .slip td.qty-col, .slip th.qty-col { 
+    font-size: 13pt; 
+    white-space: normal; 
+    padding: 2px; 
+    text-align: center; 
   }
   
   .col-prod { width: 56%; }
@@ -116,7 +123,7 @@
   .slip-total { font-size: 15pt; font-weight: bold; white-space: nowrap; padding-left: 12px; }
   .badge {
     display: inline-block; color: #000; background: #fff;
-    padding: 0px 4px; border: 2px solid #000; border-radius: 3px;
+    padding: 0px 4px; border: 2.5px solid #000; border-radius: 3px;
     font-size: 9pt; margin-right: 4px; vertical-align: middle; font-weight: bold;
   }
 
@@ -131,7 +138,7 @@
       min-height: 210mm;
       height: auto;
       font-size: 13pt;
-      padding: 3mm; /* 頭尾左右均為 3mm */
+      padding: 3mm;
       margin: 0;
       border: none;
       box-sizing: border-box;
@@ -318,7 +325,7 @@ function renderSlips() {
         </div>
       </div>
       <div class="slip-info">
-        <div>編號：<span style="font-size:16pt;font-weight:bold;">${cust.id}</span></div>
+        <div>編號：<span style="font-size:20pt;font-weight:bold;margin-left:2px;">${cust.id}</span></div>
         <div>客戶：<span style="font-size:11pt;">${cust.name}</span></div>
         <div>結單日：<span style="font-size:11pt;">${dateStr}</span></div>
       </div>

@@ -114,20 +114,21 @@
     position: relative;
     height: 38mm; 
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding-bottom: 2mm;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
-  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; margin-bottom: 1mm; }
+  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; width: 65%; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
   
   .slip-qrcode-container {
-    margin-left: 5mm;
+    position: absolute;
+    left: 70%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 25mm;
-    flex-shrink: 0;
   }
   .slip-qrcode-bottom { width: 22mm; height: 22mm; background: #fff; padding: 1mm; border: 1px solid #eee; }
   .slip-qrcode-bottom img { width: 100% !important; height: 100% !important; }
@@ -158,7 +159,7 @@
 
 <div class="upload-area" id="uploadArea">
   <h1>📦 BABY尋寶趣 出貨單產生器</h1>
-  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-03-20 07:10</span></p>
+  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-03-20 07:22</span></p>
   <label class="upload-btn" for="fileInput">選擇 Excel 檔案</label>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>

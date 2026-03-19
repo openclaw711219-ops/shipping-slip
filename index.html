@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本快感：2026-03-20-0715 */
+  /* 版本快感：2026-03-20-0728 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -112,12 +112,13 @@
     margin-top: auto; 
     padding-top: 1mm;
     position: relative;
-    height: 33mm; 
+    height: 38mm; 
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+    padding-bottom: 2mm;
   }
-  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; }
+  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; flex: 1; margin-bottom: 1mm; }
   .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
   
   .slip-qrcode-container {

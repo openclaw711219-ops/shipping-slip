@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本快感：2026-03-15-1125 */
+  /* 版本快感：2026-03-19-1415 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
   
@@ -136,8 +136,8 @@
 
   .badge {
     display: inline-block; color: #000; background: #fff;
-    padding: 0px 4px; border: 2.5px solid #000; border-radius: 3px;
-    font-size: 9pt; margin-right: 4px; vertical-align: middle; font-weight: bold;
+    padding: 0px 4px; border: 1px solid #000; border-radius: 3px;
+    font-size: 10pt; margin-right: 4px; vertical-align: middle; font-weight: bold;
   }
 
   @media print {
@@ -263,8 +263,9 @@ function renderSlips() {
         const q = Number(item.qty) || 0;
         const note = item.note;
         let badgeHtml = '';
-        if (/待補寄/.test(note)) badgeHtml += '<span class="badge">待補寄</span>';
-        if (/退款/.test(note)) badgeHtml += '<span class="badge">退款</span>';
+        if (note.trim()) {
+          badgeHtml = `<span class="badge">${note}</span>`;
+        }
         
         rowsHtml += `<tr>
           <td>${badgeHtml}${item.product}</td>

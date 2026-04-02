@@ -170,9 +170,9 @@
     body { background: #fff; }
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
-    @page { size: A5 landscape; margin: 3mm; }
+    @page { size: A5 landscape; margin: 3mm 3mm 4mm 3mm; }
     .slip {
-      width: 204mm; height: 142mm;
+      width: 204mm; height: 141mm;
       padding: 2mm; margin: 0; border: none;
       box-shadow: none; page-break-after: always;
     }
@@ -339,7 +339,7 @@ function renderSlips() {
           </div>
           <div class="slip-footer-right">
             <div class="slip-qrcode-box" id="qrcode-${ci}-${p}"></div>
-            ${isLastPage ? `<div class="slip-total-box">合計：${grandTotal}</div>` : ''}
+            <div class="slip-total-box">合計：${grandTotal}</div>
           </div>
         </div>
         ${pageNumStr}

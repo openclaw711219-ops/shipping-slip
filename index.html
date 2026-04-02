@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本：2026-03-31 A5横印版 */
+  /* 版本：2026-04-02 A5横印版v2 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
 
@@ -61,77 +61,111 @@
     overflow: hidden;
   }
 
-  .slip-header-wrapper {
-    text-align: center;
-    border-bottom: 2px solid #000;
-    padding-bottom: 4px;
-    margin-bottom: 8px;
+  /* 表頭區域：左邊店名，右邊資訊 */
+  .slip-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2mm;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 1mm;
   }
-  .slip-header .company { font-size: 18pt; font-weight: bold; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
-  .slip-header .subtitle { font-size: 11pt; color: #333; }
-  .slip-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13pt; align-items: flex-end; }
+  .slip-header-row .company {
+    font-size: 25pt;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  }
+  .slip-header-row .info-right {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 14pt;
+  }
+  .slip-header-row .info-right .cust-name {
+    font-size: 18pt;
+  }
+  .slip-header-row .info-right .cust-id {
+    font-size: 25pt;
+    font-weight: bold;
+  }
 
   .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
-  .slip th, .slip td { border: 1px solid #000; padding: 2px 4px; text-align: left; }
+  .slip th, .slip td { border: 1px solid #000; padding: 1px 3px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; font-size: 9pt; line-height: 1.2; }
 
   .slip td {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
-    height: 7.5mm;
-    line-height: 7mm;
+    height: 6.8mm;
+    line-height: 6.5mm;
     vertical-align: middle;
   }
 
   .slip tr.empty-row td {
-    border: none;
-    height: 7.5mm;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    border-top: none;
+    border-bottom: none;
+    height: 6.8mm;
+  }
+  .slip tr.empty-row:last-child td {
+    border-bottom: 1px solid #000;
   }
 
   .slip td.center { text-align: center; }
   .slip td.compact-price { font-size: 9pt; text-align: center; }
   .slip td.qty-col { font-size: 13pt; text-align: center; }
 
-  /* 合計區域：無框線，緊貼最後一列資料 */
-  .slip-total-area {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1mm;
-  }
-  .slip-total-box {
-    padding: 2px 4px;
-    text-align: right;
-    font-size: 15pt;
-    font-weight: bold;
-    background: #fff;
-  }
-
+  /* 底部區域 */
   .slip-bottom {
     margin-top: auto;
     padding-top: 1mm;
     position: relative;
-    height: 38mm;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: flex-start;
   }
-  .slip-footer { font-size: 9pt; color: #333; line-height: 1.4; width: 65%; }
-  .slip-footer ul { list-style: disc; padding-left: 14px; margin: 0; }
-
-  .slip-qrcode-container {
-    position: absolute;
-    left: 70%;
-    top: 5mm;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 25mm;
+  .slip-footer-left {
+    font-size: 12pt;
+    color: #000;
+    line-height: 1.5;
+    max-width: 60%;
   }
-  .slip-qrcode-bottom { width: 22mm; height: 22mm; background: #fff; padding: 1mm; border: 1px solid #eee; }
-  .slip-qrcode-bottom img { width: 100% !important; height: 100% !important; }
-  .slip-qrcode-id { display: none; }
+  .slip-footer-left .thanks {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .slip-footer-left .notes {
+    font-size: 9pt;
+    color: #333;
+    line-height: 1.4;
+  }
+  .slip-footer-left .notes ul { list-style: disc; padding-left: 14px; margin: 0; }
+
+  .slip-footer-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 3mm;
+  }
+  .slip-qrcode-box { width: 20mm; height: 20mm; background: #fff; padding: 1mm; border: 1px solid #eee; }
+  .slip-qrcode-box img { width: 100% !important; height: 100% !important; }
+
+  .slip-total-box {
+    font-size: 15pt;
+    font-weight: bold;
+    text-align: right;
+    padding-top: 2mm;
+  }
+
+  .slip-page-num {
+    position: absolute;
+    bottom: 1mm;
+    right: 2mm;
+    font-size: 9pt;
+    color: #666;
+  }
 
   .badge {
     display: inline-block; color: #000; background: #fff;
@@ -144,7 +178,6 @@
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
     @page { size: A5 landscape; margin: 0; }
-    .slip .page-num { display: none !important; }
     .slip {
       width: 210mm; height: 148mm;
       padding: 2mm; margin: 0; border: none;
@@ -158,7 +191,7 @@
 
 <div class="upload-area" id="uploadArea">
   <h1>📦 BABY尋寶趣 出貨單產生器</h1>
-  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-03-31 A5横印版</span></p>
+  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-02 A5横印版v2</span></p>
   <label class="upload-btn" for="fileInput">選擇 Excel 檔案</label>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>
@@ -250,7 +283,7 @@ function renderSlips() {
   let html = '';
 
   currentCustomers.forEach((cust, ci) => {
-    const itemsPerPage = 9;
+    const itemsPerPage = 14;
     const totalPages = Math.ceil(cust.items.length / itemsPerPage) || 1;
     const grandTotal = cust.items.reduce((a,b)=>a+(Number(b.qty)||0),0);
 
@@ -281,59 +314,55 @@ function renderSlips() {
       }
 
       const isLastPage = (p === totalPages - 1);
+      const pageNumStr = totalPages > 1 ? `<div class="slip-page-num">${p+1}/${totalPages}</div>` : '';
 
       html += `
       <div class="slip" data-page="${ci + 1}">
-        <div class="slip-header-wrapper">
-          <div class="slip-header">
-            <div class="company">༺ BABY尋寶趣 ༻</div>
-            <div class="subtitle">✿ 出貨明細單 ✿</div>
+        <div class="slip-header-row">
+          <div class="company">BABY尋寶趣☆</div>
+          <div class="info-right">
+            <span>結單日:${dateStr}</span>
+            <span>客戶：<span class="cust-name">${cust.name}</span></span>
+            <span>編號<span class="cust-id">${cust.id}</span></span>
           </div>
         </div>
-        <div class="slip-info">
-          <div>編號：<span style="font-size:20pt;font-weight:bold;">${cust.id}</span></div>
-          <div>客戶：${cust.name}</div>
-          <div>結單日：${dateStr} ${totalPages > 1 ? `(${p+1}/${totalPages})` : ''}</div>
-        </div>
-        <div style="position:relative;">
+        <div style="flex:1; display:flex; flex-direction:column;">
           <table>
             <thead>
               <tr>
-                <th style="width:56%">品名</th>
-                <th style="width:30%">明細</th>
-                <th style="width:7%">單價</th>
-                <th style="width:7%">數量</th>
+                <th style="width:52%">品名</th>
+                <th style="width:28%">明細</th>
+                <th style="width:10%">單價</th>
+                <th style="width:10%">數量</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
           </table>
-          ${isLastPage ? `
-          <div class="slip-total-area" style="position:absolute; top:${27.5 + (actualRowsCount * 7.5)}mm; right:0;">
-            <div class="slip-total-box">合計：${grandTotal}</div>
-          </div>
-          ` : ''}
         </div>
 
         <div class="slip-bottom">
-          <div class="slip-footer">
-            <ul>
-              <li>感謝您的訂購！如有任何問題<br>請聯繫 Line官方客服 @574uvbwp</li>
-              <li>待補寄：到貨後將盡快補寄給您</li>
-              <li>退款：因到貨時間未定，已先行退款避免久候</li>
-            </ul>
+          <div class="slip-footer-left">
+            <div class="thanks">感謝您的訂購！如有任何問題請聯繫 Line官方客服 @574uvbwp</div>
+            <div class="notes">
+              <ul>
+                <li>待補寄：到貨後將盡快補寄給您</li>
+                <li>退款：因到貨時間未定，已先行退款避免久候</li>
+              </ul>
+            </div>
           </div>
-          <div class="slip-qrcode-container">
-            <div class="slip-qrcode-bottom" id="qrcode-${ci}-${p}"></div>
-            <div class="slip-qrcode-id">@574uvbwp</div>
+          <div class="slip-footer-right">
+            <div class="slip-qrcode-box" id="qrcode-${ci}-${p}"></div>
+            ${isLastPage ? `<div class="slip-total-box">合計：${grandTotal}</div>` : ''}
           </div>
         </div>
+        ${pageNumStr}
       </div>`;
     }
   });
 
   container.innerHTML = html;
   currentCustomers.forEach((cust, ci) => {
-    const totalPages = Math.ceil(cust.items.length / 9) || 1;
+    const totalPages = Math.ceil(cust.items.length / 14) || 1;
     for (let p = 0; p < totalPages; p++) {
       const el = document.getElementById(`qrcode-${ci}-${p}`);
       if (el) new QRCode(el, { text: LINE_URL, width: 100, height: 100, correctLevel: QRCode.CorrectLevel.H });

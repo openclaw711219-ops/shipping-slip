@@ -146,6 +146,7 @@
     font-size: 12pt;
     font-weight: bold;
     margin-bottom: 2px;
+    white-space: nowrap;
   }
   .slip-footer-left .notes {
     font-size: 9pt;
@@ -158,10 +159,17 @@
     display: flex;
     align-items: flex-start;
     gap: 3mm;
-    margin-right: 20mm;
+    margin-right: 30mm;
+    margin-top: -1mm;
+  }
+  .slip-qrcode-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .slip-qrcode-box { width: 20mm; height: 20mm; background: #fff; padding: 1mm; border: 1px solid #eee; }
   .slip-qrcode-box img { width: 100% !important; height: 100% !important; }
+  .slip-qrcode-label { font-size: 8pt; color: #333; margin-top: 1mm; text-align: center; }
 
   .slip-total-box {
     font-size: 15pt;
@@ -358,7 +366,10 @@ function renderSlips() {
             </div>
           </div>
           <div class="slip-footer-right">
-            <div class="slip-qrcode-box" id="qrcode-${ci}-${p}"></div>
+            <div class="slip-qrcode-wrap">
+              <div class="slip-qrcode-box" id="qrcode-${ci}-${p}"></div>
+              <div class="slip-qrcode-label">@574uvbwp</div>
+            </div>
             ${isLastPage ? `<div class="slip-total-box">合計：${grandTotal}</div>` : ''}
           </div>
         </div>

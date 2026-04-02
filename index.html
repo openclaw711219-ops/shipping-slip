@@ -61,36 +61,53 @@
     overflow: hidden;
   }
 
-  /* 表頭區域：左邊店名，右邊資訊 */
+  /* 表頭區域 */
   .slip-header-row {
     display: flex;
-    justify-content: space-between;
     align-items: baseline;
     margin-bottom: 1mm;
     border-bottom: none;
     padding-bottom: 0;
+    padding-left: 3mm;
+    position: relative;
   }
   .slip-header-row .company {
     font-size: 25pt;
     font-weight: bold;
     font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    margin-right: 10px;
   }
-  .slip-header-row .info-right {
+  .slip-header-row .info-middle {
     display: flex;
     align-items: baseline;
-    gap: 12px;
-    font-size: 14pt;
-    margin-right: 15mm;
+    gap: 10px;
+    font-size: 12pt;
+    flex: 1;
+    min-width: 0;
   }
-  .slip-header-row .info-right .cust-name {
+  .slip-header-row .info-middle .cust-name {
     font-size: 16pt;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 30mm;
   }
-  .slip-header-row .info-right .cust-id {
+  .slip-header-row .info-id {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    font-size: 12pt;
+    white-space: nowrap;
+  }
+  .slip-header-row .info-id .cust-id {
     font-size: 25pt;
     font-weight: bold;
   }
 
-  .slip table { width: 100%; border-collapse: collapse; font-size: 13pt; table-layout: fixed; }
+  .slip table { width: calc(100% - 3mm); border-collapse: collapse; font-size: 13pt; table-layout: fixed; margin: 0 auto; }
   .slip th, .slip td { border: 1px solid #000; padding: 1px 3px; text-align: left; }
   .slip th { background: #eee; font-weight: bold; text-align: center; font-size: 9pt; line-height: 1.2; }
 
@@ -123,6 +140,7 @@
     color: #000;
     line-height: 1.5;
     max-width: 60%;
+    padding-left: 3mm;
   }
   .slip-footer-left .thanks {
     font-size: 12pt;
@@ -307,10 +325,12 @@ function renderSlips() {
       <div class="slip" data-page="${ci + 1}">
         <div class="slip-header-row">
           <div class="company">BABY尋寶趣☆</div>
-          <div class="info-right">
+          <div class="info-middle">
             <span>結單日:${dateStr}</span>
             <span>客戶：<span class="cust-name">${cust.name}</span></span>
-            <span>編號<span class="cust-id">${cust.id}</span></span>
+          </div>
+          <div class="info-id">
+            <span>編號</span><span class="cust-id">${cust.id}</span>
           </div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column;">

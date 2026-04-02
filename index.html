@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本：2026-04-02 A5横印版v2 */
+  /* 版本：2026-04-02 A5横印版v3 */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
 
@@ -66,9 +66,9 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 2mm;
-    border-bottom: 1.5px solid #000;
-    padding-bottom: 1mm;
+    margin-bottom: 1mm;
+    border-bottom: none;
+    padding-bottom: 0;
   }
   .slip-header-row .company {
     font-size: 25pt;
@@ -80,9 +80,10 @@
     align-items: baseline;
     gap: 12px;
     font-size: 14pt;
+    margin-right: 15mm;
   }
   .slip-header-row .info-right .cust-name {
-    font-size: 18pt;
+    font-size: 16pt;
   }
   .slip-header-row .info-right .cust-id {
     font-size: 25pt;
@@ -102,16 +103,7 @@
     vertical-align: middle;
   }
 
-  .slip tr.empty-row td {
-    border-left: 1px solid #000;
-    border-right: 1px solid #000;
-    border-top: none;
-    border-bottom: none;
-    height: 6.8mm;
-  }
-  .slip tr.empty-row:last-child td {
-    border-bottom: 1px solid #000;
-  }
+  /* empty rows removed - only show data rows */
 
   .slip td.center { text-align: center; }
   .slip td.compact-price { font-size: 9pt; text-align: center; }
@@ -148,6 +140,7 @@
     display: flex;
     align-items: flex-start;
     gap: 3mm;
+    margin-right: 20mm;
   }
   .slip-qrcode-box { width: 20mm; height: 20mm; background: #fff; padding: 1mm; border: 1px solid #eee; }
   .slip-qrcode-box img { width: 100% !important; height: 100% !important; }
@@ -177,9 +170,9 @@
     body { background: #fff; }
     .upload-area, .summary { display: none !important; }
     .slips-container { display: block !important; }
-    @page { size: A5 landscape; margin: 0; }
+    @page { size: A5 landscape; margin: 3mm; }
     .slip {
-      width: 210mm; height: 148mm;
+      width: 204mm; height: 142mm;
       padding: 2mm; margin: 0; border: none;
       box-shadow: none; page-break-after: always;
     }
@@ -191,7 +184,7 @@
 
 <div class="upload-area" id="uploadArea">
   <h1>📦 BABY尋寶趣 出貨單產生器</h1>
-  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-02 A5横印版v2</span></p>
+  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-02 A5横印版v3</span></p>
   <label class="upload-btn" for="fileInput">選擇 Excel 檔案</label>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>
@@ -307,12 +300,6 @@ function renderSlips() {
         </tr>`;
       });
 
-      const actualRowsCount = pageItems.length;
-
-      for (let i = actualRowsCount; i < itemsPerPage; i++) {
-        rowsHtml += '<tr class="empty-row"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
-      }
-
       const isLastPage = (p === totalPages - 1);
       const pageNumStr = totalPages > 1 ? `<div class="slip-page-num">${p+1}/${totalPages}</div>` : '';
 
@@ -330,10 +317,10 @@ function renderSlips() {
           <table>
             <thead>
               <tr>
-                <th style="width:52%">品名</th>
+                <th style="width:58%">品名</th>
                 <th style="width:28%">明細</th>
-                <th style="width:10%">單價</th>
-                <th style="width:10%">數量</th>
+                <th style="width:7%">單價</th>
+                <th style="width:7%">數量</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>

@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本：2026-04-02 A5横印版v3 */
+  /* 版本：2026-04-23 A5横印版v4（合計移至表格底部數量下方）*/
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
 
@@ -173,11 +173,20 @@
   .slip-qrcode-box img { width: 100% !important; height: 100% !important; }
   .slip-qrcode-label { font-size: 8pt; color: #333; margin-top: 0; text-align: center; }
 
-  .slip-total-box {
-    font-size: 15pt;
+  .slip table tfoot .total-row td {
+    background: #fce4ec;
     font-weight: bold;
+    height: 7mm;
+    line-height: 6.5mm;
+  }
+  .slip table tfoot .total-label {
     text-align: right;
-    padding-top: 2mm;
+    font-size: 13pt;
+    padding-right: 6px;
+  }
+  .slip table tfoot .total-qty {
+    font-size: 14pt;
+    text-align: center;
   }
 
   .slip-page-num {
@@ -212,7 +221,7 @@
 
 <div class="upload-area" id="uploadArea">
   <h1>📦 BABY尋寶趣 出貨單產生器</h1>
-  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-02 A5横印版v3</span></p>
+  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-23 A5横印版v4</span></p>
   <label class="upload-btn" for="fileInput">選擇 Excel 檔案</label>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>
@@ -354,6 +363,12 @@ function renderSlips() {
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
+            ${isLastPage ? `<tfoot>
+              <tr class="total-row">
+                <td colspan="3" class="total-label">合計</td>
+                <td class="qty-col total-qty">${grandTotal}</td>
+              </tr>
+            </tfoot>` : ''}
           </table>
         </div>
 
@@ -372,7 +387,6 @@ function renderSlips() {
               <div class="slip-qrcode-box" id="qrcode-${ci}-${p}"></div>
               <div class="slip-qrcode-label">@574uvbwp</div>
             </div>
-            ${isLastPage ? `<div class="slip-total-box">合計：${grandTotal}</div>` : ''}
           </div>
         </div>
         ${pageNumStr}

@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-  /* 版本：2026-04-23 A5横印版v5（合計純文字16pt、全黑白設計）*/
+  /* 版本：2026-04-23 A5横印版v6（QR Code 左移1cm、上移0.5cm）*/
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'PMingLiU', '新細明體', 'MingLiU', serif; background: #f5f5f5; }
 
@@ -161,8 +161,8 @@
     display: flex;
     align-items: flex-start;
     gap: 3mm;
-    margin-right: 30mm;
-    margin-top: -1mm;
+    margin-right: 40mm;
+    margin-top: -6mm;
   }
   .slip-qrcode-wrap {
     display: flex;
@@ -213,7 +213,7 @@
 
 <div class="upload-area" id="uploadArea">
   <h1>📦 BABY尋寶趣 出貨單產生器</h1>
-  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-23 A5横印版v5</span></p>
+  <p>上傳 Excel 檔案，自動產生所有客戶的出貨單<br><span style="font-size:12px;color:#999;">版本更新：2026-04-23 A5横印版v6</span></p>
   <label class="upload-btn" for="fileInput">選擇 Excel 檔案</label>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>
